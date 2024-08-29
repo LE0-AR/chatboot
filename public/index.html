@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=yes"
+    />
+    <title>Chat Bot</title>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Nunito:400,600,700"
+      rel="stylesheet"
+    />
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="css/main.css" rel="stylesheet" type="text/css" />
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <!-- Chat bot UI start -->
+    <div class="chat-screen">
+      <div class="chat-header">
+        <div class="chat-header-title">Asistente Transformetal</div>
+      </div>
+      <!-- Prueba de chatbot pedido de datos inicio -->
+
+      <div class="chat-mail">
+        <form id="chat-form">
+          <div class="row">
+            <div class="col-md-12 text-center mb-2">
+              <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum
+                voluptates eos minima sit
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <input
+                  required
+                  type="text"
+                  class="form-control"
+                  placeholder="Ingrese su nombre..."
+                  name="nombre"
+                />
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <input
+                  required
+                  type="email"
+                  class="form-control"
+                  placeholder="Ingrese su correo electronico..."
+                  name="email"
+                />
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <input
+                  required
+                  type="tel"
+                  class="form-control"
+                  placeholder="Ingrese su numero telefonico..."
+                  name="telefono"
+                />
+              </div>
+            </div>
+            <div class="col-md-12">
+              <button
+                type="submit"
+                class="btn btn-primary btn-rounded btn-block"
+              >
+                Iniciar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="chat-body hide">
+        <!-- Aquí se agregan los mensajes del chat -->
+      </div>
+      <div class="chat-input hide">
+        <input
+          type="text"
+          placeholder="Escriba su mensaje..."
+          id="user-input"
+          name="user-input"
+        />
+        <div class="input-action-icon">
+          <a id="send-message">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="feather feather-send"
+            >
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="chat-bot-icon">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="feather feather-message-square animate"
+      >
+        <path
+          d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+        ></path>
+      </svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="feather feather-x"
+      >
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </div>
+    <!-- Chat Bot UI Ends -->
+
+    <script
+      src="https://ajax.cloudflare.com/cdn-cgi/scripts/7089c43e/cloudflare-static/rocket-loader.min.js"
+      data-cf-settings="257be86a981729866f2fa61c-|49"
+      defer=""
+    ></script>
+    <!-- Time line Html Ends -->
+    <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/select2.min.js"></script>
+    <script src="js/js.js"></script>
+    <!-- Include Axios for easier HTTP requests -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const chatForm = document.getElementById("chat-form");
+        const chatBody = document.querySelector(".chat-body");
+        const chatInput = document.querySelector(".chat-input");
+        const userInput = document.getElementById("user-input");
+        const sendMessageBtn = document.getElementById("send-message");
+
+        let chatHistory = [];
+        let userData = null;
+
+        // Function to render chat messages
+        function renderMessages() {
+          chatBody.innerHTML = "";
+          chatHistory.forEach((msg) => {
+            const msgDiv = document.createElement("div");
+            msgDiv.classList.add(
+              "chat-bubble",
+              msg.sender === "user" ? "me" : "bot"
+            );
+            msgDiv.innerHTML = msg.text;
+            chatBody.appendChild(msgDiv);
+          });
+          chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        // Initialize chat if user data exists
+        if (userData) {
+          document.querySelector(".chat-mail").classList.add("hide");
+          chatBody.classList.remove("hide");
+          chatInput.classList.remove("hide");
+          renderMessages();
+        }
+
+        // Handle form submission to start chat
+        chatForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          const formData = new FormData(chatForm);
+          userData = {
+            nombre: formData.get("nombre"),
+            email: formData.get("email"),
+            telefono: formData.get("telefono"),
+            message: formData.get("message"),
+          };
+
+          document.querySelector(".chat-mail").classList.add("hide");
+          chatBody.classList.remove("hide");
+          chatInput.classList.remove("hide");
+
+          // Show welcome message
+          chatHistory.push({ sender: "bot", text: "¡Bienvenido al chat!" });
+          renderMessages();
+        });
+
+        // Handle sending messages
+        sendMessageBtn.addEventListener("click", function () {
+          const message = userInput.value.trim();
+          if (message === "") return;
+
+          // Save user's message
+          chatHistory.push({ sender: "user", text: message });
+          renderMessages();
+          userInput.value = "";
+
+          // Send email with user's first message if not already sent
+          if (!userData.messageSent) {
+            axios
+              .post("/send-email", {
+                ...userData,
+                message: message,
+              })
+              .then((response) => {
+                console.log("Correo enviado correctamente.");
+              })
+              .catch((error) => {
+                console.error("Error al enviar el correo:", error);
+              });
+
+            userData.messageSent = true;
+          }
+
+          // Simulate bot response
+          setTimeout(() => {
+            const botResponse =
+              '<div class="chat-bubble you">Gracias por tu mensaje. Te responderemos pronto.</div>';
+            chatHistory.push({ sender: "bot", text: botResponse });
+            renderMessages();
+          }, 1000);
+        });
+      });
+    </script>
+  </body>
+</html>
